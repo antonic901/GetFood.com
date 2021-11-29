@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>GetFood.com</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet"/>
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css" rel="stylesheet"/>
+    <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui"/>
+    <link rel="icon" href="https://cdn.iconscout.com/icon/free/png-512/restaurant-1495593-1267764.png" type="image/x-icon"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.6.1/css/ol.css" type="text/css">
+  </head>
+  <body>
+    <div id="app" class="content">
+      <v-app> 
+        <Sidebar></Sidebar>
+        <Navbar></Navbar>
+        <v-main style="background-image: url('../img/background.jpg');background-position: center;background-repeat: no-repeat;background-size: cover;">
+          <v-container fluid>
+            <router-view></router-view>
+          </v-container>
+        </v-main> 
+      </v-app>
+    </div>
+
+    <script src="https://unpkg.com/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/vue-router/dist/vue-router.js"></script>
+    <script src="https://unpkg.com/vuex/dist/vuex.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.js"></script>
+    <script src="https://unpkg.com/vuetify/dist/vuetify.js"></script>
+    <script src="https://unpkg.com/http-vue-loader/src/httpVueLoader.js"></script>
+    <script src="https://unpkg.com/vuex-persistedstate/dist/vuex-persistedstate.umd.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.6.1/build/ol.js"></script>
+    <!-- <script src="js/vue.js"></script>
+    <script src="js/vue-router.js"></script>
+    <script src="js/vuex.js"></script>
+    <script src="js/axios.js"></script>
+    <script src="js/vuetify.js"></script>
+    <script src="js/httpVueLoader.js"></script>
+    <script src="js/vuex-persistedstate.js"></script>
+    <script src="js/ol.js></script>" -->
+    <script>
+
+        Vue.use(httpVueLoader);
+
+        Vue.component("test", httpVueLoader("components/Test.vue"))
+        Vue.component("navbar", httpVueLoader("components/Navbar.vue"))
+        Vue.component("sidebar", httpVueLoader("components/Sidebar.vue"))
+        Vue.component("createuser", httpVueLoader("components/CreateUser.vue"))
+        Vue.component("editarticle", httpVueLoader("components/EditArticle.vue"))
+        Vue.component("shopping", httpVueLoader("components/Shopping.vue"))
+        Vue.component("review", httpVueLoader("components/Review.vue"))
+        Vue.component("viewcomment", httpVueLoader("components/ViewComment.vue"))
+
+        const routes = [
+            {
+                path: "/",
+                name: "Home",
+                component: httpVueLoader("views/Home.vue")
+            },
+            {
+                path: "/login",
+                name: "Login",
+                component: httpVueLoader("views/Login.vue")
+            },
+            {
+                path: "/registration",
+                name: "Registration",
+                component: httpVueLoader("views/Registration.vue")
+            },
+            {
+                path: "/editProfile",
+                name: "EditProfile",
+                component: httpVueLoader("views/EditProfile.vue")
+            },
+            {
+                path: "/addManagerCourier",
+                name: "AddManagerCourier",
+                component: httpVueLoader("views/AddManagerCourier.vue")
+            },
+            {
+                path: "/allRegisteredUsers",
+                name: "AllRegisteredUsers",
+                component: httpVueLoader("views/AllRegisteredUsers.vue")
+            },
+            {
+                path: "/createRestaurant",
+                name: "CreateRestaurant",
+                component: httpVueLoader("views/CreateRestaurant.vue")
+            },
+            {
+                path:"/shopping-card",
+                name:"ShoppingCard",
+                component: httpVueLoader("views/ShoppingCard.vue")
+            },
+            {
+                path: "/addNewArticle",
+                name: "AddNewArticle",
+                component: httpVueLoader("views/AddNewArticle.vue")
+            },
+            {
+                path: "/editArticles",
+                name: "EditArticles",
+                component: httpVueLoader("views/EditArticles.vue")
+            },
+            {
+                path: "/orders",
+                name: "Orders",
+                component: httpVueLoader("views/Orders.vue")
+            },
+            {
+                path: "/comments",
+                name: "Comments",
+                component: httpVueLoader("views/Comments.vue")
+            },
+            {
+                path: "/showRestaurant",
+                name: "ShowRestaurant",
+                component: httpVueLoader("views/ShowRestaurant.vue")
+            }
+        ];
+
+        const router = new VueRouter ({
+            routes: routes
+        });
+
+        const store = new Vuex.Store ({
+            strict: true,
+            state: {
+                counter: 5,
+                user: null,
+                item: null
+            },
+            getters: {
+                getCounter(state) {
+                    return state.counter
+                },
+                getUser(state) {
+                    return state.user
+                },
+                    getShoppingCart(state){
+                    return state.user.shoppingCart;
+                },
+                getIsUserLogged(state) {
+                    if(state.user == null) {
+                        return false
+                    }
+                    else {
+                        return true
+                    }
+                },
+                getItem(state) {
+                    return state.item;
+                }
+            },
+            mutations: {
+                updateUser(state, user) {
+                    state.user = user
+                },
+                
+                updateShoppingCart(state, shoppingCart) {
+                    state.user.shoppingCart = shoppingCart
+                },
+                updatePrice(state,price){
+                    state.user.shoppingCart.price = price
+                },
+                addToShoppingCart(state, article) {
+                    if(article == null) state.user.shoppingCart.articles = []
+                    else state.user.shoppingCart.articles.push(article)
+                },
+                updateItem(state, item) {
+                    state.item = item
+                }
+            },
+            actions: {
+                updateUser(context, user) {
+                    context.commit('updateUser', user)
+                },
+                updateShoppingCart(context, shoppingCart) {
+                    context.commit('updateShoppingCart', shoppingCart)
+                },
+                updatePrice(context,price){
+                    context.commit('updatePrice',price)
+                },
+                addToShoppingCart(context, article) {
+                    context.commit('addToShoppingCart', article)
+                },
+                updateItem(context, item) {
+                    context.commit('updateItem', item)
+                }
+            },
+            plugins: [window.createPersistedState({
+                storage: window.sessionStorage
+            })]
+        });
+        
+        const vuetify = new Vuetify();
+
+        new Vue ({
+            el: "#app",
+            router: router,
+            store: store,
+            vuetify: vuetify
+        }).$mount("#app");
+    </script>
+  </body>
+</html>
